@@ -1,40 +1,65 @@
-#define led 3          // Define o pino 3 como o pino do LED
-#define bottom 4       // Define o pino 4 como o pino do botão
-int btnclicado = 0;    // Variável para indicar se o botão foi clicado
-int btnliberado = 0;   // Variável para indicar se o botão foi liberado
+// Definição das variáveis
+const int ledPin = 10;
+const int dotDuration = 250;
+const int dashDuration = 750;
+const int interLetterPause = 750;
+const int interWordPause = 1500;
 
-// Função para alternar o estado do LED
-void trocaled() {
-  if (digitalRead(led) == HIGH) { // Se o LED estiver ligado
-    digitalWrite(led, LOW);       // Desliga o LED
-  } else {
-    digitalWrite(led, HIGH);      // Liga o LED
-  }
-}
+#define DOT 1
+#define DASH 2
 
-void keyup() {
-  // Se o botão foi clicado e liberado
-  if ((btnclicado == 1) && (btnliberado == 1)) {
-    btnclicado = 0;     // Reseta a variável de clique do botão
-    btnliberado = 0;    // Reseta a variável de liberação do botão
-    trocaled();         // Alterna o estado do LED
-  }
-}
+// Definição do código Morse para cada letra
+const int morseCodes[][6] = {
+  {DOT, DASH, DASH, DASH}, // J
+  {DASH, DASH, DASH},      // O
+  {DOT, DASH},             // A
+  {DASH, DASH, DASH},      // O
+  {DASH, DASH},            // M
+  {DOT},                   // E
+  {DASH, DOT, DOT},        // U
+  {DOT, DASH, DOT},        // P
+  {DOT, DASH, DOT, DASH},  // R
+  {DOT},                   // E
+  {DOT, DASH, DOT},        // F
+  {DOT},                   // E
+  {DOT, DOT},              // I
+  {DASH},                  // T
+  {DASH, DASH, DASH},      // O
+};
 
 void setup() {
-  // Configura o pino do LED como saída
-  pinMode(led, OUTPUT);
-  // Configura o pino do botão como entrada
-  pinMode(bottom, INPUT);
+  pinMode(ledPin, OUTPUT);
 }
 
 void loop() {
-  // Verifica o estado do botão
-  if (digitalRead(bottom) == HIGH) {  // Corrigido de digitalReal para digitalRead
-    btnclicado = 1;   // Define que o botão foi clicado
-    btnliberado = 0;  // Reseta a variável de liberação
-  } else {
-    btnliberado = 1;  // Define que o botão foi liberado
+  // Loop para percorrer todas as letras da frase
+  for (int i = 0; i < sizeof(morseCodes) / sizeof(morseCodes[0]); i++) {
+    // Loop para percorrer os pontos e traços de cada letra
+    for (int j = 0; j < sizeof(morseCodes[0]) / sizeof(morseCodes[0][0]); j++) {
+      // Verifica se é um ponto ou traço e pisca o LED de acordo
+      if (morseCodes[i][j] == DOT) {
+        dot(); // Ponto
+      } else if (morseCodes[i][j] == DASH) {
+        dash(); // Traço
+      }
+    }
+    delay(interLetterPause); // Pausa entre letras
   }
-  keyup(); // Corrigido de keyuo para keyup
+  delay(interWordPause); // Pausa entre palavras
+}
+
+// Função para piscar um ponto
+void dot() {
+  digitalWrite(ledPin, HIGH); // Liga o LED
+  delay(dotDuration); // Aguarda a duração do ponto
+  digitalWrite(ledPin, LOW); // Desliga o LED
+  delay(dotDuration); // Aguarda o intervalo entre sinais
+}
+
+// Função para piscar um traço
+void dash() {
+  digitalWrite(ledPin, HIGH); // Liga o LED
+  delay(dashDuration); // Aguarda a duração do traço
+  digitalWrite(ledPin, LOW); // Desliga o LED
+  delay(dotDuration); // Aguarda o intervalo entre sinais
 }
