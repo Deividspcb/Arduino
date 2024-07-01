@@ -1,4 +1,4 @@
-#define ledR 2  // Define o pino do LED vermelho
+´´#define ledR 2  // Define o pino do LED vermelho
 #define ledB 3  // Define o pino do LED azul
 #define ledG 4  // Define o pino do LED verde
 #define botao 7  // Define o pino do botão
